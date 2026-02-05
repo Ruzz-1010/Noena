@@ -91,80 +91,86 @@ export default function PhotoPairGame({
   }, [matched, handleShowProposal]);
 
   return (
-    <div className="grid grid-cols-9 gap-2">
-      {/* Image preload */}
-      <div className="hidden">
-        {images.map((image, i) => (
-          <Image
-            key={i}
-            src={image}
-            alt={`Image ${i + 1}`}
-            layout="fill"
-            objectFit="cover"
-            priority
-          />
-        ))}
+    <div className="min-h-screen flex items-center justify-center p-4 overflow-x-auto">
+      {/* Mobile container that scales the entire grid */}
+      <div className="scale-75 sm:scale-90 md:scale-100 origin-center">
+        {/* Image preload - hidden */}
+        <div className="hidden">
+          {images.map((image, i) => (
+            <Image
+              key={i}
+              src={image}
+              alt={`Image ${i + 1}`}
+              width={100}
+              height={100}
+              priority
+            />
+          ))}
+        </div>
+
+        {/* Game Grid */}
+        <div className="grid grid-cols-9 gap-1 md:gap-2">
+          {heartLayout.flat().map((index, i) =>
+            index !== null ? (
+              <motion.div
+                key={i}
+                className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 relative cursor-pointer"
+                whileHover={{ scale: 1.1 }}
+                onClick={() => handleClick(index)}
+                style={{ perspective: "1000px" }}
+              >
+                {/* Back of the card */}
+                {!selected.includes(index) && !matched.includes(index) && (
+                  <motion.div
+                    className="w-full h-full bg-gray-300 rounded-md absolute"
+                    initial={{ rotateY: 0 }}
+                    animate={{
+                      rotateY:
+                        selected.includes(index) || matched.includes(index)
+                          ? 180
+                          : 0,
+                    }}
+                    transition={{ duration: 0.5 }}
+                    style={{ backfaceVisibility: "hidden" }}
+                  />
+                )}
+
+                {/* Front of the card (image) */}
+                {(selected.includes(index) || matched.includes(index)) && (
+                  <motion.div
+                    className="w-full h-full absolute"
+                    initial={{ rotateY: -180 }}
+                    animate={{ rotateY: 0 }}
+                    transition={{ duration: 0.5 }}
+                    style={{ backfaceVisibility: "hidden" }}
+                  >
+                    <Image
+                      src={images[index]}
+                      alt={`Imagen ${index + 1}`}
+                      fill
+                      className="rounded-md object-cover"
+                      sizes="(max-width: 640px) 56px, (max-width: 768px) 64px, 80px"
+                    />
+                  </motion.div>
+                )}
+
+                {/* Incorrect animation */}
+                {incorrect.includes(index) && (
+                  <motion.div
+                    className="absolute inset-0"
+                    animate={{ scale: [1, 1.1, 1], opacity: [1, 0, 1] }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <div className="w-full h-full bg-red-500 rounded-md"></div>
+                  </motion.div>
+                )}
+              </motion.div>
+            ) : (
+              <div key={i} className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20"></div>
+            )
+          )}
+        </div>
       </div>
-
-      {heartLayout.flat().map((index, i) =>
-        index !== null ? (
-          <motion.div
-            key={i}
-            className="w-20 h-20 relative cursor-pointer"
-            whileHover={{ scale: 1.1 }}
-            onClick={() => handleClick(index)}
-            style={{ perspective: "1000px" }} // Add perspective for 3D effect
-          >
-            {/* Back of the card */}
-            {!selected.includes(index) && !matched.includes(index) && (
-              <motion.div
-                className="w-full h-full bg-gray-300 rounded-md absolute"
-                initial={{ rotateY: 0 }}
-                animate={{
-                  rotateY:
-                    selected.includes(index) || matched.includes(index)
-                      ? 180
-                      : 0,
-                }}
-                transition={{ duration: 0.5 }}
-                style={{ backfaceVisibility: "hidden" }}
-              />
-            )}
-
-            {/* Front of the card (image) */}
-            {(selected.includes(index) || matched.includes(index)) && (
-              <motion.div
-                className="w-full h-full absolute"
-                initial={{ rotateY: -180 }}
-                animate={{ rotateY: 0 }}
-                transition={{ duration: 0.5 }}
-                style={{ backfaceVisibility: "hidden" }}
-              >
-                <Image
-                  src={images[index]}
-                  alt={`Imagen ${index + 1}`}
-                  layout="fill"
-                  objectFit="cover"
-                  className="rounded-md"
-                />
-              </motion.div>
-            )}
-
-            {/* Incorrect animation */}
-            {incorrect.includes(index) && (
-              <motion.div
-                className="absolute inset-0"
-                animate={{ scale: [1, 1.1, 1], opacity: [1, 0, 1] }}
-                transition={{ duration: 0.5 }}
-              >
-                <div className="w-full h-full bg-red-500 rounded-md"></div>
-              </motion.div>
-            )}
-          </motion.div>
-        ) : (
-          <div key={i} className="w-20 h-20"></div>
-        )
-      )}
     </div>
   );
 }
