@@ -341,7 +341,7 @@ export default function ValentinesProposal() {
               {/* Congratulations Message */}
               <div className="text-center">
                 <h3 className={`text-3xl font-bold mb-2 ${playfairDisplay.className}`}>
-                  Congratulations! 🎉
+                  Congratulations! 
                 </h3>
                 <p className="text-lg text-gray-700 mb-4">
                   Here's a flower for you! 🌸
